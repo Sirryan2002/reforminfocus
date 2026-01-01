@@ -1,0 +1,21 @@
+@import 'globals.css';
+
+/* TOPIC TAGS */
+.topic-tag {
+    display: inline-block;
+    background: var(--neutral-900);
+    color: var(--white);
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.125rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.topic-tag.funding { background: var(--accent-green); }
+.topic-tag.teachers { background: var(--accent-orange); }
+.topic-tag.assessment { background: var(--accent-red); }
