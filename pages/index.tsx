@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Navbar from "@/components/navbar";
-
-import "@/styles/globals.css";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Article, { ArticleHeader, ArticleBody, ArticleFigure } from "@/components/article";
 
 
 export default function Home() {
@@ -13,13 +13,11 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div>
-        <main >
-          <Navbar />
-          <h1>Welcome to Reform in Focus</h1>
-          Test
-        </main>
-      </div>
+      <Navbar />
+      <Article>
+        <ArticleHeader title="Welcome to Reform in Focus" subtitle="Exploring the Path to Meaningful Change" />
+        <ArticleBody articleContent="This is where the main content of the article will go. Stay tuned for more updates!" />
+      </Article>
     </>
   );
 }

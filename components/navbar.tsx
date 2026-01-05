@@ -13,7 +13,7 @@ export default function Navbar(): JSX.Element {
         <nav>
             <div className="container">
                 <div className="nav-container">
-                    <div className="logo">Reform in Focus</div>
+                    <Logo />
                     <ul className="nav-links">
                         <li><Link href="/">Home</Link></li>
                         <li><Link href="/explore">Explore Topics</Link></li>
@@ -24,5 +24,13 @@ export default function Navbar(): JSX.Element {
                 </div>
             </div>
         </nav>
+    );
+}
+
+const Logo = () => {
+    return (
+        <Link href="/" className ="logo">
+            <div className="logo">Reform in Focus</div>
+        </Link>
     );
 }

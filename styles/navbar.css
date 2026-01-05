@@ -11,14 +11,19 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 2rem 0 2rem;
 }
 
-.logo {
+div .logo {
     font-size: 1.75rem;
     font-weight: 800;
     color: var(--neutral-900);
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     letter-spacing: -0.025em;
+}
+
+.logo {
+    text-decoration: none;
 }
 
 .nav-links {
