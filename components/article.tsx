@@ -1,10 +1,10 @@
 
 import React, { JSX } from 'react';
-import Image from 'next/image'
-import '../styles/article.css';
-
+import Image from 'next/image';
 import { Interweave } from 'interweave';
+import type { Article } from '@/types';
 
+// Legacy type for backward compatibility
 export type articleType = {
     id: number;
     title: string;
@@ -12,6 +12,9 @@ export type articleType = {
     excerpt: string;
     content: string;
 }
+
+// Export the full Article type for new code
+export type { Article };
 
 export default function Article({ children }: {
     children: React.ReactNode;

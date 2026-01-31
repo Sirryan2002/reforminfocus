@@ -33,7 +33,6 @@ const ArticleList = () => {
                 const response = await res.json();
                 console.log('Fetched articles:', response.data);
                 setArticles(response.data);
-                console.log('Articles state after fetch:', articles);
 
             } catch (error) {
                 console.error('Error fetching articles:', error);

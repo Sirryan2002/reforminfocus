@@ -1,5 +1,4 @@
 import { JSX } from 'react';
-import '../styles/navbar.css';
 import Link from 'next/link';
 
 /**
@@ -16,10 +15,11 @@ export default function Navbar(): JSX.Element {
                     <Logo />
                     <ul className="nav-links">
                         <li><Link href="/">Home</Link></li>
-                        <li><Link href="/explore">Explore Topics</Link></li>
-                        <li><Link href="/learn">Understanding Reform</Link></li>
+                        <li><Link href="/topics">Explore Topics</Link></li>
+                        <li><Link href="/understanding-reform">Understanding Reform</Link></li>
                         <li><Link href="/research">Research</Link></li>
                         <li><Link href="/subscribe">Subscribe</Link></li>
+                        <li><Link href="/search">Search</Link></li>
                     </ul>
                 </div>
             </div>
