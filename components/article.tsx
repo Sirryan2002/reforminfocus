@@ -3,7 +3,15 @@ import React, { JSX } from 'react';
 import Image from 'next/image'
 import '../styles/article.css';
 
+import { Interweave } from 'interweave';
 
+export type articleType = {
+    id: number;
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+}
 
 export default function Article({ children }: {
     children: React.ReactNode;
@@ -33,7 +41,7 @@ export const ArticleHeader = ({ title, subtitle }: { title: string, subtitle: st
 export const ArticleBody = ({ articleContent }: { articleContent: string }) => {
   return (
     <article className='ArticleBody'>
-      <p>{articleContent}</p>
+      <Interweave content={articleContent} />
     </article>
   );
 }

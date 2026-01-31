@@ -1,7 +1,7 @@
 import Navbar from "@/components/navbar";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Article, { ArticleHeader, ArticleBody, ArticleFigure } from "@/components/article";
-import { JSX, useEffect, useState } from "react";
+import Article, { ArticleHeader, ArticleBody, ArticleFigure, articleType } from "@/components/article";
+import { useEffect, useState } from "react";
 
 
 
@@ -14,35 +14,32 @@ export default function Articles() {
     </>);
 }
 
-type articleType = {
-    id: number;
-    title: string;
-    slug: string;
-    excerpt: string;
-}
+
 
 const ArticleList = () => {
     const [articles, setArticles] = useState<articleType[]>([]);
     const [loading, setLoading] = useState(true);
 
 
-    const fetchArticles = async () => {
-        try {
-            const res = await fetch('/api/getArticles');
-            if (!res.ok) {
-                throw new Error('Failed to fetch articles');
-            }
-            const response = await res.json();
-            console.log('Fetched articles:', response.data);
-            setArticles(response.data);
-            console.log('Articles state after fetch:', articles);
 
-        } catch (error) {
-            console.error('Error fetching articles:', error);
-        }
-    };
 
     useEffect(() => {
+        const fetchArticles = async () => {
+            try {
+                const res = await fetch('/api/getArticles');
+                if (!res.ok) {
+                    throw new Error('Failed to fetch articles');
+                }
+                const response = await res.json();
+                console.log('Fetched articles:', response.data);
+                setArticles(response.data);
+                console.log('Articles state after fetch:', articles);
+
+            } catch (error) {
+                console.error('Error fetching articles:', error);
+            }
+        };
+
         fetchArticles().finally(() => setLoading(false));
     }, []);
 
