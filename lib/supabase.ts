@@ -5,7 +5,15 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
 
 // Public client for client-side operations (respects RLS)
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+// Configured to persist auth session in localStorage
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+  }
+});
 
 // Admin client for server-side operations (bypasses RLS)
 // Only use this in API routes, never on the client
