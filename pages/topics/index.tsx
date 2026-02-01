@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import Head from 'next/head';
 import Link from 'next/link';
 import Navbar from '@/components/navbar';
+import SEOHead from '@/components/SEOHead';
 import type { Cluster, Tag } from '@/types';
 
 type ClusterWithTags = Cluster & {
@@ -36,16 +36,15 @@ export default function TopicsPage() {
 
   return (
     <>
-      <Head>
-        <title>Explore Topics - Reform in Focus</title>
-        <meta
-          name="description"
-          content="Explore K-12 education reform topics in Michigan including literacy, funding, teacher pipeline, and school choice"
-        />
-      </Head>
+      <SEOHead
+        title="Explore Michigan K-12 Education Reform Topics"
+        description="Explore K-12 education reform topics in Michigan including literacy, funding, teacher pipeline, and school choice. In-depth policy analysis and connections."
+        canonical="/topics"
+        ogType="website"
+      />
       <Navbar />
 
-      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <main className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem' }}>
         <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
           <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>Explore Topics</h1>
           <p style={{ fontSize: '1.25rem', color: 'var(--neutral-600)', maxWidth: '700px', margin: '0 auto' }}>
@@ -87,7 +86,7 @@ export default function TopicsPage() {
             </p>
           </div>
         )}
-      </div>
+      </main>
     </>
   );
 }

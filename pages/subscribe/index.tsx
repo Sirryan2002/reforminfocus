@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Head from 'next/head';
 import Navbar from '@/components/navbar';
+import SEOHead from '@/components/SEOHead';
 import Button from '@/components/button';
 
 export default function SubscribePage() {
@@ -41,16 +41,14 @@ export default function SubscribePage() {
 
   return (
     <>
-      <Head>
-        <title>Subscribe - Reform in Focus</title>
-        <meta
-          name="description"
-          content="Subscribe to Reform in Focus for weekly education reform updates and analysis."
-        />
-      </Head>
+      <SEOHead
+        title="Subscribe to Reform in Focus Newsletter"
+        description="Subscribe to Reform in Focus for weekly Michigan K-12 education reform updates, analysis, and research. Get policy insights delivered to your inbox."
+        canonical="/subscribe"
+      />
       <Navbar />
 
-      <div className="container" style={{ maxWidth: '700px', margin: '0 auto', padding: '3rem 1rem' }}>
+      <main className="container" style={{ maxWidth: '700px', margin: '0 auto', padding: '3rem 1rem' }}>
         <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
           <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', fontFamily: "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif" }}>
             Stay Informed
@@ -60,7 +58,7 @@ export default function SubscribePage() {
           </p>
         </header>
 
-        <div
+        <section
           style={{
             backgroundColor: 'var(--white)',
             border: '1px solid var(--neutral-200)',
@@ -215,8 +213,8 @@ export default function SubscribePage() {
           <p style={{ fontSize: '0.875rem', color: 'var(--neutral-500)', marginTop: '1.5rem', textAlign: 'center' }}>
             We respect your privacy. Unsubscribe anytime.
           </p>
-        </div>
-      </div>
+        </section>
+      </main>
     </>
   );
 }

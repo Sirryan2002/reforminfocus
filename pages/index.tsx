@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Navbar from '@/components/navbar';
+import SEOHead from '@/components/SEOHead';
 import type { Article, Tag } from '@/types';
 
 type ArticleWithTags = Article & {
@@ -45,21 +46,65 @@ export default function Home() {
     });
   };
 
+  // Structured data for homepage
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Reform in Focus",
+    "url": "https://blog.ryanlongo.net",
+    "logo": "https://blog.ryanlongo.net/logo.png",
+    "description": "Michigan K-12 Education Reform Analysis - Connecting policy initiatives to show how they relate and where they're heading long-term.",
+    "foundingDate": "2024",
+    "areaServed": {
+      "@type": "State",
+      "name": "Michigan"
+    },
+    "knowsAbout": ["K-12 Education", "Education Reform", "Education Policy", "Michigan Schools"]
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Reform in Focus",
+    "url": "https://blog.ryanlongo.net",
+    "description": "Michigan K-12 Education Reform Analysis",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://blog.ryanlongo.net/search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  };
+
   return (
     <>
+      <SEOHead
+        title="Reform in Focus - Michigan K-12 Education Reform"
+        description="Exploring K-12 education reform across Michigan. Connecting policy initiatives to understand where reform is heading long-term. Analysis for parents, school boards, and educators."
+        canonical="/"
+        ogType="website"
+      />
+
+      {/* Structured Data */}
       <Head>
-        <title>Reform in Focus - Michigan K-12 Education Reform</title>
-        <meta
-          name="description"
-          content="Exploring K-12 education reform across Michigan. Connecting policy initiatives to understand where reform is heading long-term."
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
       </Head>
+
       <Navbar />
 
       {/* Hero Section */}
-      <section
+      <header
+        role="banner"
+        aria-label="Site hero"
         style={{
           backgroundColor: 'var(--neutral-900)',
           color: 'var(--white)',
@@ -84,10 +129,10 @@ export default function Home() {
             Connecting policy initiatives to show how they relate and where they&rsquo;re heading long-term
           </p>
         </div>
-      </section>
+      </header>
 
       {/* Main Content */}
-      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '3rem 1rem' }}>
+      <main className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '3rem 1rem' }}>
         {loading && (
           <div className="loading-container">
             <div className="loading-spinner"></div>
@@ -253,7 +298,7 @@ export default function Home() {
             </aside>
           </div>
         )}
-      </div>
+      </main>
     </>
   );
 }

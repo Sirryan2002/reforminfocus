@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import Head from 'next/head';
 import Link from 'next/link';
 import Navbar from '@/components/navbar';
+import SEOHead from '@/components/SEOHead';
 import type { Article, Cluster, Tag } from '@/types';
 
 type ArticleWithTags = Article & {
@@ -91,24 +91,23 @@ export default function ClusterPage() {
 
   return (
     <>
-      <Head>
-        <title>{cluster.name} - Reform in Focus</title>
-        <meta
-          name="description"
-          content={cluster.description || `Explore articles about ${cluster.name} in Michigan K-12 education`}
-        />
-      </Head>
+      <SEOHead
+        title={`${cluster.name} - Michigan K-12 Education Reform`}
+        description={cluster.description || `Explore articles about ${cluster.name} in Michigan K-12 education. In-depth analysis and policy insights for educators and administrators.`}
+        canonical={`/topics/${cluster.slug}`}
+        ogType="website"
+      />
       <Navbar />
 
-      <div className="container" style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <main className="container" style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 1rem' }}>
         {/* Breadcrumb */}
-        <div style={{ marginBottom: '2rem', fontSize: '0.875rem', color: 'var(--neutral-500)' }}>
+        <nav aria-label="Breadcrumb" style={{ marginBottom: '2rem', fontSize: '0.875rem', color: 'var(--neutral-500)' }}>
           <Link href="/topics" style={{ color: 'var(--primary-blue)', textDecoration: 'none' }}>
             Topics
           </Link>
           {' '}/{' '}
-          <span>{cluster.name}</span>
-        </div>
+          <span aria-current="page">{cluster.name}</span>
+        </nav>
 
         {/* Cluster Header */}
         <header style={{ marginBottom: '3rem' }}>
@@ -148,7 +147,7 @@ export default function ClusterPage() {
             ))}
           </div>
         )}
-      </div>
+      </main>
     </>
   );
 }

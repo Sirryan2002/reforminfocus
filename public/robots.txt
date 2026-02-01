@@ -1,0 +1,19 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin routes
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /api/admin/
+
+# Allow API routes for public data
+Allow: /api/getArticles
+Allow: /api/getArticleBySlug
+Allow: /api/search
+Allow: /api/topics/
+Allow: /api/tags/
+Allow: /api/clusters
+
+# Sitemap location
+Sitemap: https://blog.ryanlongo.net/sitemap.xml

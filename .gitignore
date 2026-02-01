@@ -41,8 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 # documentation (internal use only)
-DEVELOPMENT_ANALYSIS.md
-TODO.md
-ADMIN_SETUP.md
-GOOGLE_OAUTH_SETUP.md
-CLAUDE.md
+/dev_docs/

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!--
+    This is a placeholder sitemap.
+    The dynamic sitemap is generated at /api/sitemap.xml
+    Configure your build process to generate this at build time.
+  -->
+  <url>
+    <loc>https://blog.ryanlongo.net/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

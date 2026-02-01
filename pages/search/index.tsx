@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
 import Link from 'next/link';
 import Navbar from '@/components/navbar';
+import SEOHead from '@/components/SEOHead';
 import type { Article } from '@/types';
 
 export default function SearchPage() {
@@ -65,18 +65,24 @@ export default function SearchPage() {
     });
   };
 
+  const pageTitle = router.query.q
+    ? `Search results for "${router.query.q}"`
+    : 'Search Articles';
+  const pageDescription = router.query.q
+    ? `Search results for "${router.query.q}" - Find Michigan K-12 education reform articles and analysis.`
+    : 'Search Reform in Focus articles on Michigan K-12 education reform, policy initiatives, and analysis.';
+
   return (
     <>
-      <Head>
-        <title>Search - Reform in Focus</title>
-        <meta
-          name="description"
-          content="Search Reform in Focus articles on Michigan K-12 education reform."
-        />
-      </Head>
+      <SEOHead
+        title={pageTitle}
+        description={pageDescription}
+        canonical="/search"
+        noindex={router.query.q ? true : false}
+      />
       <Navbar />
 
-      <div className="container" style={{ maxWidth: '900px', margin: '0 auto', padding: '3rem 1rem' }}>
+      <main className="container" style={{ maxWidth: '900px', margin: '0 auto', padding: '3rem 1rem' }}>
         <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
           <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', fontFamily: "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif" }}>
             Search Articles
@@ -87,7 +93,7 @@ export default function SearchPage() {
         </header>
 
         {/* Search Form */}
-        <form onSubmit={handleSubmit} style={{ marginBottom: '3rem' }}>
+        <form onSubmit={handleSubmit} style={{ marginBottom: '3rem' }} role="search" aria-label="Article search">
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <input
               type="text"
@@ -240,7 +246,7 @@ export default function SearchPage() {
             </p>
           </div>
         )}
-      </div>
+      </main>
     </>
   );
 }

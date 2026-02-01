@@ -1,9 +1,11 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Article, { ArticleHeader, ArticleBody, articleType } from "@/components/article";
+import Article, { ArticleHeader, ArticleBody } from "@/components/article";
 import Navbar from "@/components/navbar";
+import SEOHead from "@/components/SEOHead";
 import Head from "next/head";
+import type { Article as ArticleType } from '@/types';
 
 export default function ArticlePage() {
     const router = useRouter();
@@ -36,7 +38,7 @@ export default function ArticlePage() {
 }
 
 const ArticleContainer = ({ articleSlug }: { articleSlug: string }) => {
-    const [article, setArticle] = useState<articleType | null>(null);
+    const [article, setArticle] = useState<ArticleType | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -170,12 +172,60 @@ const ArticleContainer = ({ articleSlug }: { articleSlug: string }) => {
         );
     }
 
+    // Generate JSON-LD structured data for article
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: article.title,
+        description: article.excerpt,
+        author: {
+            "@type": "Organization",
+            name: "Reform in Focus",
+            url: "https://blog.ryanlongo.net"
+        },
+        publisher: {
+            "@type": "Organization",
+            name: "Reform in Focus",
+            logo: {
+                "@type": "ImageObject",
+                url: "https://blog.ryanlongo.net/logo.png"
+            }
+        },
+        datePublished: article.published_at || article.created_at,
+        dateModified: article.updated_at || article.published_at || article.created_at,
+        mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": `https://blog.ryanlongo.net/articles/${article.slug}`
+        },
+        image: article.featured_image_url || "https://blog.ryanlongo.net/og-default.png",
+        articleSection: "Education",
+        keywords: "Michigan education reform, K-12 policy, education analysis"
+    };
+
     return (
         <>
+            <SEOHead
+                title={article.title}
+                description={article.excerpt}
+                canonical={`/articles/${article.slug}`}
+                ogType="article"
+                ogImage={article.featured_image_url || undefined}
+                ogImageAlt={article.title}
+                article={{
+                    publishedTime: article.published_at || article.created_at,
+                    modifiedTime: article.updated_at,
+                    author: article.author_name || "Reform in Focus"
+                }}
+            />
+
+            {/* JSON-LD Structured Data */}
             <Head>
-                <title>{article.title} - Reform in Focus</title>
-                <meta name="description" content={article.excerpt} />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                />
             </Head>
+
             <Article>
                 <ArticleHeader title={article.title} subtitle={article.slug} />
                 <ArticleBody articleContent={article.content} />
