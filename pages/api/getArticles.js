@@ -27,14 +27,15 @@ export default async function handler(req, res) {
       const { data, error } = await supabase
         .from('articles')
         .select('*')
-        .order('updated_at', { ascending: false })
+        .eq('published', true)
+        .order('published_at', { ascending: false })
         .limit(10);
         //.offset(offset);
-  
+
       if (error) {
         throw error;
       }
-  
+
       res.status(200).json({ message: 'Articles retrieved successfully', data });
 
     } catch (err) {

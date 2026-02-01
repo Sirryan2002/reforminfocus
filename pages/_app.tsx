@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import "@/styles/navbar.css";
 import "@/styles/article.css";
 import "@/styles/buttons.css";
+import "@/styles/tiptap.css";
 import type { AppProps } from "next/app";
 import { supabase } from "@/lib/supabase";
 

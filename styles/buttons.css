@@ -38,3 +38,20 @@
     background: var(--neutral-900);
     color: var(--white);
 }
+
+/* Mobile-friendly button adjustments */
+@media (max-width: 768px) {
+    .btn {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.9375rem;
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+}

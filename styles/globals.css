@@ -31,4 +31,13 @@ body {
     line-height: 1.65;
     color: var(--neutral-800);
     background-color: var(--white);
+    overflow-x: hidden;
+}
+
+/* Mobile-friendly base styles */
+@media (max-width: 768px) {
+    body {
+        font-size: 16px;
+        -webkit-text-size-adjust: 100%;
+    }
 }

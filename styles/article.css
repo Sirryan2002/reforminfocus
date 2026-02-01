@@ -1,15 +1,456 @@
-
+/* Article Container - Newspaper Style */
 .ArticleContainer {
-    max-width: 800px;
+    max-width: 680px;
     margin: 0 auto;
-    padding: 20px;
-    font-family: 'Georgia', serif;
-    line-height: 1.6;
-    color: #333;
+    padding: 3rem 1.5rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    line-height: 1.8;
+    color: #1a1a1a;
+}
+
+/* Article Header */
+.ArticleHeader {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.ArticleHeader h1 {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: #000;
+    letter-spacing: -0.02em;
+}
+
+.ArticleHeader .subtitle {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: #404040;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+}
+
+/* Article Meta */
+.ArticleMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 0.875rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.ArticleMeta span {
+    display: inline-flex;
+    align-items: center;
+}
+
+.ArticleMeta span::after {
+    content: '•';
+    margin-left: 0.75rem;
+    color: #999;
+}
+
+.ArticleMeta span:last-child::after {
+    content: '';
+    margin-left: 0;
+}
+
+/* Article Body - Classic Newspaper Typography */
+.ArticleBody {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #1a1a1a;
 }
 
 .ArticleBody p {
-    margin-top: 15px;
-    margin-bottom: 15px;
-    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    text-align: justify;
+    hyphens: auto;
+}
+
+.ArticleBody p:first-of-type {
+    margin-top: 0;
+}
+
+.ArticleBody p:first-of-type::first-letter {
+    float: left;
+    font-size: 4.5rem;
+    line-height: 0.85;
+    margin: 0.1rem 0.1rem 0 0;
+    font-weight: 700;
+    color: #000;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+/* Headings in Article Body */
+.ArticleBody h1,
+.ArticleBody h2,
+.ArticleBody h3,
+.ArticleBody h4 {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-weight: 700;
+    color: #000;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.ArticleBody h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+    border-top: 3px solid #000;
+    padding-top: 1.5rem;
+}
+
+.ArticleBody h2 {
+    font-size: 1.75rem;
+    line-height: 1.3;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e5e5;
+}
+
+.ArticleBody h3 {
+    font-size: 1.375rem;
+    line-height: 1.4;
+}
+
+.ArticleBody h4 {
+    font-size: 1.125rem;
+    line-height: 1.5;
+    font-weight: 600;
+}
+
+/* Lists - Newspaper Style */
+.ArticleBody ul,
+.ArticleBody ol {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+}
+
+.ArticleBody li {
+    margin-bottom: 0.75rem;
+    line-height: 1.7;
+}
+
+.ArticleBody li:last-child {
+    margin-bottom: 0;
+}
+
+.ArticleBody ul {
+    list-style-type: square;
+}
+
+.ArticleBody ul li::marker {
+    color: #666;
+}
+
+.ArticleBody ol {
+    list-style-type: decimal;
+}
+
+.ArticleBody ol li::marker {
+    font-weight: 600;
+    color: #000;
+}
+
+/* Blockquotes - Pull Quote Style */
+.ArticleBody blockquote {
+    margin: 2.5rem 0;
+    padding: 1.5rem 2rem;
+    border-left: 4px solid #2563eb;
+    background-color: #f8f9fa;
+    font-size: 1.25rem;
+    font-style: italic;
+    line-height: 1.6;
+    color: #1a1a1a;
+    position: relative;
+}
+
+.ArticleBody blockquote::before {
+    content: '"';
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    font-size: 4rem;
+    line-height: 1;
+    color: #2563eb;
+    opacity: 0.2;
+    font-family: Georgia, serif;
+}
+
+.ArticleBody blockquote p {
+    margin-bottom: 0.75rem;
+    text-align: left;
+}
+
+.ArticleBody blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.ArticleBody blockquote cite {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Code Blocks - Minimal Style */
+.ArticleBody pre {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: #1a1a1a;
+    color: #f8f8f2;
+    border-radius: 0;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    border-left: 3px solid #2563eb;
+}
+
+.ArticleBody pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+}
+
+.ArticleBody code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    background-color: #f0f0f0;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    color: #d14;
+}
+
+/* Links - Classic Newspaper Style */
+.ArticleBody a {
+    color: #2563eb;
+    text-decoration: none;
+    border-bottom: 1px solid #2563eb;
+    transition: all 0.2s ease;
+}
+
+.ArticleBody a:hover {
+    color: #1d4ed8;
+    border-bottom-color: #1d4ed8;
+    background-color: rgba(37, 99, 235, 0.05);
+}
+
+.ArticleBody a:visited {
+    color: #6366f1;
+    border-bottom-color: #6366f1;
+}
+
+/* Images - Full Bleed with Captions */
+.ArticleBody img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 2.5rem 0;
+    border-radius: 0;
+}
+
+.ArticleBody figure {
+    margin: 2.5rem 0;
+}
+
+.ArticleBody figure img {
+    margin: 0;
+}
+
+.ArticleBody figcaption {
+    margin-top: 0.75rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #666;
+    font-style: italic;
+    text-align: left;
+}
+
+/* Horizontal Rule - Section Break */
+.ArticleBody hr {
+    margin: 3rem 0;
+    border: none;
+    border-top: 1px solid #e5e5e5;
+    text-align: center;
+    height: 1px;
+    position: relative;
+}
+
+.ArticleBody hr::after {
+    content: '§';
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    background: #fff;
+    padding: 0 1rem;
+    color: #999;
+    font-size: 1.25rem;
+}
+
+/* Text Formatting */
+.ArticleBody strong,
+.ArticleBody b {
+    font-weight: 700;
+    color: #000;
+}
+
+.ArticleBody em,
+.ArticleBody i {
+    font-style: italic;
+}
+
+.ArticleBody s,
+.ArticleBody strike {
+    text-decoration: line-through;
+    color: #666;
+}
+
+.ArticleBody u {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+/* Tables - Data Presentation */
+.ArticleBody table {
+    width: 100%;
+    margin: 2rem 0;
+    border-collapse: collapse;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 0.9rem;
+}
+
+.ArticleBody table thead {
+    border-bottom: 2px solid #000;
+}
+
+.ArticleBody table th {
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+    color: #000;
+}
+
+.ArticleBody table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.ArticleBody table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+    .ArticleContainer {
+        padding: 2rem 1rem;
+    }
+
+    .ArticleHeader h1 {
+        font-size: 2rem;
+    }
+
+    .ArticleHeader .subtitle {
+        font-size: 1.125rem;
+    }
+
+    .ArticleBody {
+        font-size: 1.0625rem;
+    }
+
+    .ArticleBody p {
+        text-align: left;
+        hyphens: none;
+    }
+
+    .ArticleBody p:first-of-type::first-letter {
+        font-size: 3.5rem;
+    }
+
+    .ArticleBody h1 {
+        font-size: 1.75rem;
+    }
+
+    .ArticleBody h2 {
+        font-size: 1.5rem;
+    }
+
+    .ArticleBody h3 {
+        font-size: 1.25rem;
+    }
+
+    .ArticleBody blockquote {
+        font-size: 1.125rem;
+        padding: 1rem 1.5rem;
+        margin: 2rem -1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ArticleContainer {
+        padding: 1.5rem 1rem;
+    }
+
+    .ArticleHeader h1 {
+        font-size: 1.75rem;
+    }
+
+    .ArticleBody {
+        font-size: 1rem;
+    }
+
+    .ArticleBody p:first-of-type::first-letter {
+        font-size: 3rem;
+        margin-right: 0.05rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .ArticleContainer {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .ArticleBody a {
+        color: #000;
+        border-bottom: none;
+    }
+
+    .ArticleBody a::after {
+        content: ' (' attr(href) ')';
+        font-size: 0.8em;
+        color: #666;
+    }
+
+    .ArticleBody blockquote {
+        border-left-color: #000;
+        background-color: #fff;
+    }
+
+    .ArticleBody pre {
+        background-color: #f8f9fa;
+        color: #000;
+        border: 1px solid #e5e5e5;
+    }
 }

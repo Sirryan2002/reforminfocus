@@ -2,6 +2,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
+import Placeholder from '@tiptap/extension-placeholder';
 import { useCallback } from 'react';
 
 interface TiptapEditorProps {
@@ -11,44 +12,67 @@ interface TiptapEditorProps {
 
 export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-600 underline',
+          class: 'editor-link',
         },
       }),
       Image.configure({
         HTMLAttributes: {
-          class: 'max-w-full h-auto',
+          class: 'editor-image',
         },
+      }),
+      Placeholder.configure({
+        placeholder: 'Start writing your article content here...',
       }),
     ],
     content,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
-    editorProps: {
-      attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none min-h-[300px] p-4',
-        style: 'font-family: Georgia, "Times New Roman", serif; line-height: 1.7;',
-      },
-    },
   });
 
   const addLink = useCallback(() => {
-    const url = window.prompt('Enter URL:');
-    if (url && editor) {
-      editor.chain().focus().setLink({ href: url }).run();
+    if (!editor) return;
+
+    const previousUrl = editor.getAttributes('link').href;
+    const url = window.prompt('Enter URL:', previousUrl || 'https://');
+
+    // cancelled
+    if (url === null) {
+      return;
     }
+
+    // empty
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+
+    // update link
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+  }, [editor]);
+
+  const removeLink = useCallback(() => {
+    if (!editor) return;
+    editor.chain().focus().unsetLink().run();
   }, [editor]);
 
   const addImage = useCallback(() => {
-    const url = window.prompt('Enter image URL:');
-    if (url && editor) {
-      editor.chain().focus().setImage({ src: url }).run();
+    if (!editor) return;
+
+    const url = window.prompt('Enter image URL:', 'https://');
+
+    if (url === null || url === '') {
+      return;
     }
+
+    // Add image with default width constraint
+    editor.chain().focus().setImage({ src: url }).run();
   }, [editor]);
 
   if (!editor) {
@@ -69,12 +93,14 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
       type="button"
       style={{
         padding: '0.5rem 0.75rem',
-        backgroundColor: active ? 'var(--neutral-200)' : 'var(--white)',
+        backgroundColor: active ? 'var(--primary-blue)' : 'var(--white)',
+        color: active ? 'var(--white)' : 'var(--neutral-700)',
         border: '1px solid var(--neutral-300)',
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontWeight: active ? '600' : 'normal',
         opacity: disabled ? 0.5 : 1,
-        fontSize: '0.875rem'
+        fontSize: '0.875rem',
+        transition: 'all 0.2s',
       }}
     >
       {children}
@@ -174,16 +200,32 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         >
           {'</>'}
         </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleCode().run()}
+          active={editor.isActive('code')}
+          title="Inline Code"
+        >
+          {'<code>'}
+        </MenuButton>
 
         <div style={{ width: '1px', backgroundColor: 'var(--neutral-300)', margin: '0 0.25rem' }} />
 
         <MenuButton
           onClick={addLink}
           active={editor.isActive('link')}
-          title="Add Link"
+          title="Add/Edit Link"
         >
           🔗 Link
         </MenuButton>
+        {editor.isActive('link') && (
+          <MenuButton
+            onClick={removeLink}
+            active={false}
+            title="Remove Link"
+          >
+            🚫 Unlink
+          </MenuButton>
+        )}
         <MenuButton
           onClick={addImage}
           active={false}
@@ -229,16 +271,25 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         }}
       />
 
-      {/* Character Count */}
+      {/* Status Bar */}
       <div style={{
         padding: '0.5rem 1rem',
         backgroundColor: 'var(--neutral-50)',
         borderTop: '1px solid var(--neutral-300)',
         fontSize: '0.75rem',
         color: 'var(--neutral-600)',
-        textAlign: 'right'
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
       }}>
-        {editor.storage.characterCount?.characters() || 0} characters • {editor.storage.characterCount?.words() || 0} words
+        <div>
+          {editor.storage.characterCount?.characters() || 0} characters • {editor.storage.characterCount?.words() || 0} words
+        </div>
+        {editor.isActive('link') && (
+          <div style={{ color: 'var(--primary-blue)', fontSize: '0.75rem' }}>
+            Link active - Click &quot;Unlink&quot; to remove or &quot;Link&quot; to edit
+          </div>
+        )}
       </div>
     </div>
   );

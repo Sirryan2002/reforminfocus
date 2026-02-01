@@ -93,7 +93,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
         </div>
 
         {/* Navigation */}
-        <nav>
+        <nav style={{ backgroundColor: 'var(--neutral-900)' }}>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {navItems.map((item) => {
               const isActive = router.pathname === item.href;

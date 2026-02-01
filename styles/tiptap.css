@@ -1,0 +1,329 @@
+/* Tiptap Editor Styles */
+
+/* Editor container */
+.ProseMirror {
+  padding: 1.5rem;
+  min-height: 400px;
+  background-color: var(--white);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--neutral-900);
+  outline: none;
+}
+
+/* Cursor visibility */
+.ProseMirror:focus {
+  outline: none;
+}
+
+.ProseMirror .ProseMirror-focused {
+  outline: none;
+}
+
+/* Placeholder */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--neutral-400);
+  pointer-events: none;
+  height: 0;
+}
+
+/* Headings */
+.ProseMirror h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  line-height: 1.2;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  line-height: 1.3;
+}
+
+.ProseMirror h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  line-height: 1.4;
+}
+
+.ProseMirror h1:first-child,
+.ProseMirror h2:first-child,
+.ProseMirror h3:first-child {
+  margin-top: 0;
+}
+
+/* Paragraphs */
+.ProseMirror p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+/* Lists */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 2rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.ProseMirror ul {
+  list-style-type: disc;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+}
+
+.ProseMirror li {
+  margin-bottom: 0.25rem;
+}
+
+.ProseMirror li p {
+  margin-bottom: 0.25rem;
+}
+
+/* Nested lists */
+.ProseMirror ul ul,
+.ProseMirror ul ol,
+.ProseMirror ol ul,
+.ProseMirror ol ol {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.ProseMirror ul ul {
+  list-style-type: circle;
+}
+
+.ProseMirror ul ul ul {
+  list-style-type: square;
+}
+
+/* Blockquotes */
+.ProseMirror blockquote {
+  border-left: 4px solid var(--primary-blue);
+  padding-left: 1.5rem;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-style: italic;
+  color: var(--neutral-700);
+  background-color: var(--neutral-50);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.ProseMirror blockquote p {
+  margin-bottom: 0.5rem;
+}
+
+.ProseMirror blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Code blocks */
+.ProseMirror pre {
+  background-color: var(--neutral-900);
+  color: #f8f8f2;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.ProseMirror pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+
+/* Inline code */
+.ProseMirror code {
+  background-color: var(--neutral-100);
+  color: var(--neutral-900);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875em;
+}
+
+/* Links */
+.ProseMirror a {
+  color: var(--primary-blue);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.ProseMirror a:hover {
+  color: #1d4ed8;
+}
+
+/* Link with visible URL on hover */
+.ProseMirror a[href]::after {
+  content: ' (' attr(href) ')';
+  font-size: 0.75em;
+  color: var(--neutral-500);
+  text-decoration: none;
+  display: none;
+}
+
+.ProseMirror a[href]:hover::after {
+  display: inline;
+}
+
+/* Images */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Image selection */
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 3px solid var(--primary-blue);
+  outline-offset: 2px;
+}
+
+/* Horizontal Rule */
+.ProseMirror hr {
+  border: none;
+  border-top: 2px solid var(--neutral-300);
+  margin: 2rem 0;
+}
+
+/* Text formatting */
+.ProseMirror strong {
+  font-weight: bold;
+}
+
+.ProseMirror em {
+  font-style: italic;
+}
+
+.ProseMirror s {
+  text-decoration: line-through;
+}
+
+/* Selection */
+.ProseMirror ::selection {
+  background-color: #b3d4fc;
+}
+
+.ProseMirror ::-moz-selection {
+  background-color: #b3d4fc;
+}
+
+/* Cursor */
+.ProseMirror .ProseMirror-cursor {
+  border-left: 2px solid var(--neutral-900);
+  margin-left: -1px;
+  pointer-events: none;
+}
+
+/* Gapcursor (between nodes) */
+.ProseMirror .ProseMirror-gapcursor {
+  display: none;
+  pointer-events: none;
+  position: absolute;
+}
+
+.ProseMirror .ProseMirror-gapcursor:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: -2px;
+  width: 20px;
+  border-top: 2px solid var(--neutral-900);
+  animation: ProseMirror-cursor-blink 1.1s steps(2, start) infinite;
+}
+
+@keyframes ProseMirror-cursor-blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* Node selection */
+.ProseMirror-selectednode {
+  outline: 3px solid var(--primary-blue);
+  outline-offset: 2px;
+}
+
+/* Drag handle */
+.ProseMirror-selectednode img {
+  cursor: move;
+}
+
+/* Empty paragraph */
+.ProseMirror p.is-empty:not(.is-editor-empty) {
+  position: relative;
+}
+
+/* Focus state for entire editor */
+.ProseMirror:focus-visible {
+  outline: none;
+}
+
+/* Better spacing for consecutive elements */
+.ProseMirror > * + * {
+  margin-top: 0.75rem;
+}
+
+.ProseMirror > h1 + *,
+.ProseMirror > h2 + *,
+.ProseMirror > h3 + * {
+  margin-top: 0.5rem;
+}
+
+/* Table support (if added later) */
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.ProseMirror table td,
+.ProseMirror table th {
+  border: 1px solid var(--neutral-300);
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.ProseMirror table th {
+  background-color: var(--neutral-100);
+  font-weight: bold;
+}
+
+/* Responsive images */
+@media (max-width: 768px) {
+  .ProseMirror img {
+    max-width: calc(100vw - 3rem);
+  }
+}
