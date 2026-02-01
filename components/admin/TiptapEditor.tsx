@@ -3,7 +3,8 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
+import { supabase } from '@/lib/supabase';
 
 interface TiptapEditorProps {
   content: string;
@@ -11,6 +12,8 @@ interface TiptapEditorProps {
 }
 
 export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -62,7 +65,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     editor.chain().focus().unsetLink().run();
   }, [editor]);
 
-  const addImage = useCallback(() => {
+  const addImageFromUrl = useCallback(() => {
     if (!editor) return;
 
     const url = window.prompt('Enter image URL:', 'https://');
@@ -71,9 +74,69 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
       return;
     }
 
-    // Add image with default width constraint
     editor.chain().focus().setImage({ src: url }).run();
   }, [editor]);
+
+  const uploadImage = useCallback(async (file: File) => {
+    if (!editor) return;
+
+    try {
+      // Generate unique filename
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const randomString = Math.random().toString(36).substring(2, 8);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${timestamp}-${randomString}.${fileExt}`;
+      const filePath = `uploads/${fileName}`;
+
+      // Upload to Supabase
+      const { data, error } = await supabase.storage
+        .from('article-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('article-images')
+        .getPublicUrl(filePath);
+
+      // Insert image into editor
+      editor.chain().focus().setImage({ src: urlData.publicUrl }).run();
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload image. Please try again.');
+    }
+  }, [editor]);
+
+  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image too large. Maximum size is 5MB. Please compress your image first.');
+        return;
+      }
+
+      uploadImage(file);
+    }
+    // Reset input
+    if (event.target) {
+      event.target.value = '';
+    }
+  }, [uploadImage]);
+
+  const addImageFromFile = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
 
   if (!editor) {
     return null;
@@ -227,12 +290,28 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
           </MenuButton>
         )}
         <MenuButton
-          onClick={addImage}
+          onClick={addImageFromFile}
           active={false}
-          title="Add Image"
+          title="Upload Image (from file)"
         >
-          🖼️ Image
+          📤 Upload
         </MenuButton>
+        <MenuButton
+          onClick={addImageFromUrl}
+          active={false}
+          title="Insert Image (from URL)"
+        >
+          🖼️ URL
+        </MenuButton>
+
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          onChange={handleFileSelect}
+          style={{ display: 'none' }}
+        />
 
         <div style={{ width: '1px', backgroundColor: 'var(--neutral-300)', margin: '0 0.25rem' }} />
 

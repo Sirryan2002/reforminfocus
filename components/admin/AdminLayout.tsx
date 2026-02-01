@@ -40,6 +40,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
     { href: '/admin/clusters', label: 'Clusters', icon: '📁' },
     { href: '/admin/subscribers', label: 'Subscribers', icon: '📧' },
     { href: '/admin/contacts', label: 'Contact Inbox', icon: '✉️' },
+      { href: '/admin/images', label: 'Image Manager', icon: '🖼️' },
   ];
 
   return (

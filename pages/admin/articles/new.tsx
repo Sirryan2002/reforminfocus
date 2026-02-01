@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { withAuth } from '@/lib/withAuth';
 import AdminLayout from '@/components/admin/AdminLayout';
 import TiptapEditor from '@/components/admin/TiptapEditor';
+import ImageUploader from '@/components/admin/ImageUploader';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 
@@ -19,11 +20,15 @@ function NewArticlePage() {
     article_type: 'topic' as 'topic' | 'research' | 'opinion' | 'understanding',
     author_name: '',
     read_time_minutes: null as number | null,
+    featured_image_url: '',
+    meta_description: '',
     published: false,
     pinned: false,
   });
   const [status, setStatus] = useState<'idle' | 'saving' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showImageGuidelines, setShowImageGuidelines] = useState(false);
+  const [showSEOSection, setShowSEOSection] = useState(false);
 
   const generateSlug = (title: string) => {
     return title
@@ -77,6 +82,8 @@ function NewArticlePage() {
         article_type: formData.article_type,
         author_name: formData.author_name.trim() || null,
         read_time_minutes: readTime,
+        featured_image_url: formData.featured_image_url.trim() || null,
+        // Note: meta_description field can be added later if needed in database
         published: shouldPublish,
         published_at: shouldPublish ? new Date().toISOString() : null,
         pinned: formData.pinned,
@@ -303,6 +310,165 @@ function NewArticlePage() {
                 resize: 'vertical'
               }}
             />
+          </div>
+
+          {/* Featured Image Section */}
+          <div style={{ marginBottom: '1.5rem', border: '1px solid var(--neutral-300)', borderRadius: '8px', padding: '1.5rem', backgroundColor: 'var(--neutral-50)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <label style={{ fontWeight: '600', color: 'var(--neutral-800)', fontSize: '1.125rem' }}>
+                Featured Image
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowImageGuidelines(!showImageGuidelines)}
+                style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--primary-blue)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }}
+              >
+                {showImageGuidelines ? 'Hide' : 'Show'} Guidelines
+              </button>
+            </div>
+
+            {showImageGuidelines && (
+              <div style={{
+                marginBottom: '1rem',
+                padding: '1rem',
+                backgroundColor: '#FEF3C7',
+                borderRadius: '6px',
+                fontSize: '0.875rem',
+                lineHeight: '1.6'
+              }}>
+                <p style={{ fontWeight: '600', marginBottom: '0.5rem', color: '#92400E' }}>📸 Image Optimization Guidelines</p>
+                <ul style={{ marginLeft: '1.25rem', color: '#78350F' }}>
+                  <li><strong>Size:</strong> 1200x630px for featured/OG images, max 800px wide for inline images</li>
+                  <li><strong>Format:</strong> Use WebP (70% smaller) or JPEG. Avoid large PNGs unless transparency needed</li>
+                  <li><strong>File Size:</strong> Target under 200KB per image (5MB Supabase limit, 1GB total free tier)</li>
+                  <li><strong>Compression Tools:</strong>
+                    <a href="https://tinypng.com" target="_blank" rel="noopener" style={{ color: '#92400E', marginLeft: '0.25rem' }}>TinyPNG</a> •
+                    <a href="https://squoosh.app" target="_blank" rel="noopener" style={{ color: '#92400E', marginLeft: '0.25rem' }}>Squoosh</a> •
+                    <a href="https://imageoptim.com" target="_blank" rel="noopener" style={{ color: '#92400E', marginLeft: '0.25rem' }}>ImageOptim</a>
+                  </li>
+                  <li><strong>SEO:</strong> Featured images appear in social shares (Facebook, Twitter, LinkedIn)</li>
+                  <li><strong>Performance:</strong> Compressed images = faster load times = better Core Web Vitals</li>
+                </ul>
+              </div>
+            )}
+
+            <ImageUploader
+              onUploadComplete={(url) => setFormData({ ...formData, featured_image_url: url })}
+              bucket="article-images"
+              maxSizeMB={5}
+              buttonText="Upload Featured Image"
+            />
+
+            <div style={{ marginTop: '1rem' }}>
+              <label htmlFor="featured_image_url" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', fontSize: '0.875rem' }}>
+                Image URL (or paste external URL)
+              </label>
+              <input
+                type="url"
+                id="featured_image_url"
+                value={formData.featured_image_url}
+                onChange={(e) => setFormData({ ...formData, featured_image_url: e.target.value })}
+                placeholder="https://..."
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  fontSize: '0.875rem',
+                  border: '1px solid var(--neutral-300)',
+                  borderRadius: '6px',
+                  fontFamily: 'monospace'
+                }}
+              />
+            </div>
+
+            {formData.featured_image_url && (
+              <div style={{ marginTop: '1rem' }}>
+                <p style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.5rem' }}>Preview:</p>
+                <img
+                  src={formData.featured_image_url}
+                  alt="Featured image preview"
+                  style={{
+                    maxWidth: '400px',
+                    maxHeight: '300px',
+                    borderRadius: '6px',
+                    border: '1px solid var(--neutral-300)'
+                  }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* SEO Section */}
+          <div style={{ marginBottom: '1.5rem', border: '1px solid var(--neutral-300)', borderRadius: '8px', padding: '1.5rem', backgroundColor: 'var(--neutral-50)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <label style={{ fontWeight: '600', color: 'var(--neutral-800)', fontSize: '1.125rem' }}>
+                SEO & Social Sharing
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowSEOSection(!showSEOSection)}
+                style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--primary-blue)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }}
+              >
+                {showSEOSection ? 'Collapse' : 'Expand'}
+              </button>
+            </div>
+
+            {showSEOSection && (
+              <>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label htmlFor="meta_description" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', fontSize: '0.875rem' }}>
+                    Meta Description (appears in Google search results)
+                  </label>
+                  <textarea
+                    id="meta_description"
+                    value={formData.meta_description}
+                    onChange={(e) => setFormData({ ...formData, meta_description: e.target.value })}
+                    placeholder="Brief description for search engines (150-160 characters recommended)"
+                    rows={2}
+                    maxLength={160}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      fontSize: '0.875rem',
+                      border: '1px solid var(--neutral-300)',
+                      borderRadius: '6px',
+                      fontFamily: 'inherit',
+                      resize: 'vertical'
+                    }}
+                  />
+                  <div style={{ fontSize: '0.75rem', color: 'var(--neutral-500)', marginTop: '0.25rem' }}>
+                    {formData.meta_description.length}/160 characters
+                    {!formData.meta_description && ' (will use excerpt if empty)'}
+                  </div>
+                </div>
+
+                <div style={{ padding: '1rem', backgroundColor: '#DBEAFE', borderRadius: '6px', fontSize: '0.875rem' }}>
+                  <p style={{ fontWeight: '600', marginBottom: '0.5rem', color: '#1E40AF' }}>🔍 SEO Tips</p>
+                  <ul style={{ marginLeft: '1.25rem', color: '#1E3A8A', lineHeight: '1.6' }}>
+                    <li>Title should be under 60 characters for Google</li>
+                    <li>Meta description should be 150-160 characters</li>
+                    <li>Featured image becomes the Open Graph image for social sharing</li>
+                    <li>Slug should be descriptive and include keywords</li>
+                  </ul>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Content Editor */}
