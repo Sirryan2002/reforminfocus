@@ -99,7 +99,7 @@ export default function ClusterPage() {
       />
       <Navbar />
 
-      <main className="container" style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <main id="main-content" className="container" style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 1rem' }}>
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" style={{ marginBottom: '2rem', fontSize: '0.875rem', color: 'var(--neutral-500)' }}>
           <Link href="/topics" style={{ color: 'var(--primary-blue)', textDecoration: 'none' }}>
@@ -183,6 +183,21 @@ function ArticleCard({ article, accentColor }: { article: ArticleWithTags; accen
         }}
       >
         <div>
+          {/* Featured Image */}
+          {article.featured_image_url && (
+            <div style={{ width: '100%', height: '200px', overflow: 'hidden', borderRadius: '6px', marginBottom: '1rem' }}>
+              <img
+                src={article.featured_image_url}
+                alt={article.title}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
+              />
+            </div>
+          )}
+
           {/* Article Type Badge */}
           {article.article_type && (
             <span

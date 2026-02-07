@@ -42,3 +42,5 @@ next-env.d.ts
 
 # documentation (internal use only)
 /dev_docs/
+
+/.claude/

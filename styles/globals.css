@@ -41,3 +41,72 @@ body {
         -webkit-text-size-adjust: 100%;
     }
 }
+
+/* ACCESSIBILITY */
+
+/* Skip to main content link (for screen readers and keyboard navigation) */
+.skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--primary-blue);
+    color: var(--white);
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 0 0 4px 0;
+    font-weight: bold;
+    z-index: 9999;
+    transition: top 0.2s ease;
+}
+
+.skip-to-content:focus {
+    top: 0;
+}
+
+/* Focus visible states for all interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid var(--primary-blue);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Remove default focus outline but keep for :focus-visible */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Ensure sufficient color contrast for links */
+a {
+    color: var(--primary-blue);
+    text-decoration-skip-ink: auto;
+}
+
+a:hover {
+    color: var(--primary-blue-dark);
+}
+
+/* Screen reader only class */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Focus visible for custom styled elements */
+.custom-focus:focus-visible {
+    box-shadow: 0 0 0 3px var(--primary-blue);
+}

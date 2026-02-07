@@ -34,6 +34,20 @@
     margin-bottom: 1.5rem;
 }
 
+/* Article Featured Image */
+.ArticleFeaturedImage {
+    margin: 2.5rem 0;
+    width: 100%;
+}
+
+.ArticleFeaturedImage img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 /* Article Meta */
 .ArticleMeta {
     display: flex;

@@ -1,4 +1,4 @@
-import { JSX, useState } from 'react';
+import { JSX, useState, useEffect } from 'react';
 import Link from 'next/link';
 
 /**
@@ -19,9 +19,27 @@ export default function Navbar(): JSX.Element {
         setMobileMenuOpen(false);
     };
 
+    // Close mobile menu on Escape key
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && mobileMenuOpen) {
+                closeMobileMenu();
+            }
+        };
+
+        if (mobileMenuOpen) {
+            document.addEventListener('keydown', handleEscape);
+            return () => document.removeEventListener('keydown', handleEscape);
+        }
+    }, [mobileMenuOpen]);
+
     return (
-        <nav>
-            <div className="container">
+        <>
+            <a href="#main-content" className="skip-to-content">
+                Skip to main content
+            </a>
+            <nav aria-label="Main navigation">
+                <div className="container">
                 <div className="nav-container">
                     <Logo />
 
@@ -63,6 +81,7 @@ export default function Navbar(): JSX.Element {
                 )}
             </div>
         </nav>
+        </>
     );
 }
 

@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import validator from 'validator';
 import { supabase } from '@/lib/supabase';
+import { subscribeRateLimiter } from '@/lib/rateLimit';
 import type { ApiResponse, SubscriberPreferences } from '@/types';
 
 export default async function handler(
@@ -10,13 +12,20 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Rate limiting: 3 requests per minute per IP
+  try {
+    await subscribeRateLimiter.check(req, res, 3);
+  } catch {
+    return; // Rate limiter already sent response
+  }
+
   const { email, preferences } = req.body as {
     email: string;
     preferences: SubscriberPreferences;
   };
 
-  if (!email || !email.includes('@')) {
-    return res.status(400).json({ error: 'Valid email is required' });
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ error: 'Valid email address is required' });
   }
 
   try {

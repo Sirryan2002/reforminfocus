@@ -24,6 +24,7 @@ function EditArticlePage() {
     read_time_minutes: null as number | null,
     published: false,
     pinned: false,
+    featured_image_url: null as string | null,
   });
   const [status, setStatus] = useState<'loading' | 'idle' | 'saving' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState('');
@@ -58,6 +59,7 @@ function EditArticlePage() {
           read_time_minutes: articleData.read_time_minutes,
           published: articleData.published,
           pinned: articleData.pinned || false,
+          featured_image_url: articleData.featured_image_url,
         });
         setStatus('idle');
       } catch (error) {
@@ -69,13 +71,6 @@ function EditArticlePage() {
 
     fetchArticle();
   }, [router.isReady, id]);
-
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  };
 
   const handleTitleChange = (title: string) => {
     setFormData(prev => ({
@@ -125,6 +120,7 @@ function EditArticlePage() {
         published: shouldPublish,
         published_at: shouldPublish && !article?.published ? new Date().toISOString() : article?.published_at,
         pinned: formData.pinned,
+        featured_image_url: formData.featured_image_url,
       };
 
       const { error } = await supabase
@@ -399,7 +395,7 @@ function EditArticlePage() {
           {/* Excerpt */}
           <div style={{ marginBottom: '1.5rem' }}>
             <label
-              htmlFor="excerpt"
+              htmlFor="featured_image_url"
               style={{
                 display: 'block',
                 marginBottom: '0.5rem',
@@ -427,7 +423,34 @@ function EditArticlePage() {
               }}
             />
           </div>
-
+          {/* featured image */}
+          <div style={{ marginBottom: '1.5rem' }}>
+          <label
+              htmlFor="featured_image_url"
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontWeight: '600',
+                color: 'var(--neutral-800)'
+              }}
+            >
+              Featured Image
+            </label>
+            <input
+              type="text"
+              id="featured_image_url"
+              value={formData.featured_image_url || ''}
+              onChange={(e) => setFormData({ ...formData, featured_image_url: e.target.value })}
+              placeholder="Featured image URL"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  fontSize: '1rem',
+                  border: '1px solid var(--neutral-300)',
+                  borderRadius: '6px'
+                }}
+            />
+          </div>
           {/* Content Editor */}
           <div style={{ marginBottom: '1.5rem' }}>
             <label

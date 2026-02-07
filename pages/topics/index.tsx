@@ -44,7 +44,7 @@ export default function TopicsPage() {
       />
       <Navbar />
 
-      <main className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <main id="main-content" className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem' }}>
         <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
           <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>Explore Topics</h1>
           <p style={{ fontSize: '1.25rem', color: 'var(--neutral-600)', maxWidth: '700px', margin: '0 auto' }}>

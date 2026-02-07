@@ -132,7 +132,7 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '3rem 1rem' }}>
+      <main id="main-content" className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '3rem 1rem' }}>
         {loading && (
           <div className="loading-container">
             <div className="loading-spinner"></div>
@@ -312,38 +312,53 @@ function FeaturedArticleCard({ article }: { article: ArticleWithTags }) {
         style={{
           border: '2px solid var(--primary-blue)',
           borderRadius: '8px',
-          padding: '2rem',
+          overflow: 'hidden',
           backgroundColor: 'var(--white)',
           transition: 'all 0.2s ease',
         }}
       >
-        <span
-          style={{
-            display: 'inline-block',
-            fontSize: '0.75rem',
-            padding: '0.25rem 0.75rem',
-            backgroundColor: 'var(--primary-blue)',
-            color: 'var(--white)',
-            borderRadius: '4px',
-            marginBottom: '1rem',
-            textTransform: 'uppercase',
-            fontWeight: 'bold',
-          }}
-        >
-          Featured
-        </span>
-        <h3
-          style={{
-            fontSize: '2rem',
-            marginBottom: '1rem',
-            fontFamily: "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif",
-          }}
-        >
-          {article.title}
-        </h3>
-        <p style={{ color: 'var(--neutral-700)', lineHeight: '1.7', fontSize: '1.125rem' }}>
-          {article.excerpt}
-        </p>
+        {article.featured_image_url && (
+          <div style={{ width: '100%', height: '300px', overflow: 'hidden' }}>
+            <img
+              src={article.featured_image_url}
+              alt={article.title}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+            />
+          </div>
+        )}
+        <div style={{ padding: '2rem' }}>
+          <span
+            style={{
+              display: 'inline-block',
+              fontSize: '0.75rem',
+              padding: '0.25rem 0.75rem',
+              backgroundColor: 'var(--primary-blue)',
+              color: 'var(--white)',
+              borderRadius: '4px',
+              marginBottom: '1rem',
+              textTransform: 'uppercase',
+              fontWeight: 'bold',
+            }}
+          >
+            Featured
+          </span>
+          <h3
+            style={{
+              fontSize: '2rem',
+              marginBottom: '1rem',
+              fontFamily: "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif",
+            }}
+          >
+            {article.title}
+          </h3>
+          <p style={{ color: 'var(--neutral-700)', lineHeight: '1.7', fontSize: '1.125rem' }}>
+            {article.excerpt}
+          </p>
+        </div>
       </div>
     </Link>
   );
@@ -366,44 +381,67 @@ function ArticleCard({
       }}
     >
       <Link href={articleUrl} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <div>
-          {article.article_type && (
-            <span
+        <div style={{ display: 'flex', gap: '1.5rem' }}>
+          {article.featured_image_url && (
+            <div
               style={{
-                display: 'inline-block',
-                fontSize: '0.75rem',
-                padding: '0.25rem 0.5rem',
-                backgroundColor: 'var(--neutral-100)',
-                color: 'var(--neutral-700)',
+                width: '200px',
+                minWidth: '200px',
+                height: '133px',
+                overflow: 'hidden',
                 borderRadius: '4px',
-                marginBottom: '0.5rem',
-                textTransform: 'uppercase',
-                fontWeight: 'bold',
               }}
             >
-              {article.article_type}
-            </span>
+              <img
+                src={article.featured_image_url}
+                alt={article.title}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
+              />
+            </div>
           )}
-          <h3
-            style={{
-              fontSize: '1.5rem',
-              marginBottom: '0.5rem',
-              fontFamily: "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif",
-              color: 'var(--neutral-900)',
-            }}
-          >
-            {article.title}
-          </h3>
-          <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', color: 'var(--neutral-500)', marginBottom: '0.75rem' }}>
-            {article.published_at && <span>{formatDate(article.published_at)}</span>}
-            {article.read_time_minutes && (
-              <>
-                <span>•</span>
-                <span>{article.read_time_minutes} min read</span>
-              </>
+          <div style={{ flex: 1 }}>
+            {article.article_type && (
+              <span
+                style={{
+                  display: 'inline-block',
+                  fontSize: '0.75rem',
+                  padding: '0.25rem 0.5rem',
+                  backgroundColor: 'var(--neutral-100)',
+                  color: 'var(--neutral-700)',
+                  borderRadius: '4px',
+                  marginBottom: '0.5rem',
+                  textTransform: 'uppercase',
+                  fontWeight: 'bold',
+                }}
+              >
+                {article.article_type}
+              </span>
             )}
+            <h3
+              style={{
+                fontSize: '1.5rem',
+                marginBottom: '0.5rem',
+                fontFamily: "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif",
+                color: 'var(--neutral-900)',
+              }}
+            >
+              {article.title}
+            </h3>
+            <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', color: 'var(--neutral-500)', marginBottom: '0.75rem' }}>
+              {article.published_at && <span>{formatDate(article.published_at)}</span>}
+              {article.read_time_minutes && (
+                <>
+                  <span>•</span>
+                  <span>{article.read_time_minutes} min read</span>
+                </>
+              )}
+            </div>
+            <p style={{ color: 'var(--neutral-700)', lineHeight: '1.6' }}>{article.excerpt}</p>
           </div>
-          <p style={{ color: 'var(--neutral-700)', lineHeight: '1.6' }}>{article.excerpt}</p>
         </div>
       </Link>
     </article>

@@ -227,7 +227,20 @@ const ArticleContainer = ({ articleSlug }: { articleSlug: string }) => {
             </Head>
 
             <Article>
-                <ArticleHeader title={article.title} subtitle={article.slug} />
+                <ArticleHeader title={article.title} subtitle={article.excerpt} />
+                {article.featured_image_url && (
+                    <div className="ArticleFeaturedImage">
+                        <img
+                            src={article.featured_image_url}
+                            alt={article.title}
+                            style={{
+                                width: '100%',
+                                height: 'auto',
+                                marginBottom: '2.5rem'
+                            }}
+                        />
+                    </div>
+                )}
                 <ArticleBody articleContent={article.content} />
             </Article>
         </>

@@ -82,7 +82,7 @@ export default function SearchPage() {
       />
       <Navbar />
 
-      <main className="container" style={{ maxWidth: '900px', margin: '0 auto', padding: '3rem 1rem' }}>
+      <main id="main-content" className="container" style={{ maxWidth: '900px', margin: '0 auto', padding: '3rem 1rem' }}>
         <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
           <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', fontFamily: "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif" }}>
             Search Articles

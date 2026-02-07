@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import validator from 'validator';
 import { supabase } from '@/lib/supabase';
+import { contactRateLimiter } from '@/lib/rateLimit';
 import type { ApiResponse, ContactFormData, ContactSubmissionInsert } from '@/types';
 
 export default async function handler(
@@ -10,6 +12,13 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Rate limiting: 5 requests per minute per IP
+  try {
+    await contactRateLimiter.check(req, res, 5);
+  } catch {
+    return; // Rate limiter already sent response
+  }
+
   const { name, email, subject, message } = req.body as ContactFormData;
 
   // Validation
@@ -17,8 +26,8 @@ export default async function handler(
     return res.status(400).json({ error: 'All fields are required' });
   }
 
-  if (!email.includes('@')) {
-    return res.status(400).json({ error: 'Valid email is required' });
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ error: 'Valid email address is required' });
   }
 
   if (message.length < 10) {

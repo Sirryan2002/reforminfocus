@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
+import { searchRateLimiter } from '@/lib/rateLimit';
 import type { ApiResponse, Article } from '@/types';
 
 export default async function handler(
@@ -8,6 +9,13 @@ export default async function handler(
 ) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Rate limiting: 30 requests per minute per IP
+  try {
+    await searchRateLimiter.check(req, res, 30);
+  } catch {
+    return; // Rate limiter already sent response
   }
 
   const { q } = req.query;
