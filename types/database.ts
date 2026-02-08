@@ -244,6 +244,58 @@ export type Database = {
           updated_at?: string
         }
       }
+      authors: {
+        Row: {
+          id: number
+          name: string
+          slug: string
+          avatar_url: string | null
+          bio: string | null
+          title: string | null
+          social_links: Json | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          name: string
+          slug: string
+          avatar_url?: string | null
+          bio?: string | null
+          title?: string | null
+          social_links?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          name?: string
+          slug?: string
+          avatar_url?: string | null
+          bio?: string | null
+          title?: string | null
+          social_links?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      article_authors: {
+        Row: {
+          article_id: number
+          author_id: number
+          author_order: number
+        }
+        Insert: {
+          article_id: number
+          author_id: number
+          author_order?: number
+        }
+        Update: {
+          article_id?: number
+          author_id?: number
+          author_order?: number
+        }
+      }
     }
     Views: {
       [_ in never]: never

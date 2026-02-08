@@ -3,12 +3,17 @@ import Link from "next/link";
 import Article, { ArticleHeader, ArticleBody } from "@/components/article";
 import Navbar from "@/components/navbar";
 import SEOHead from "@/components/SEOHead";
+import AuthorByline, { AuthorBylineLegacy } from "@/components/AuthorByline";
 import Head from "next/head";
-import type { Article as ArticleType } from '@/types';
+import type { Article as ArticleType, AuthorSummary } from '@/types';
 import { supabase } from "@/lib/supabase";
 
+interface ArticleWithAuthors extends ArticleType {
+    authors?: AuthorSummary[];
+}
+
 interface ArticlePageProps {
-    article: ArticleType | null;
+    article: ArticleWithAuthors | null;
     error?: string;
 }
 
@@ -56,17 +61,27 @@ export default function Page({ article, error }: ArticlePageProps) {
         );
     }
 
+    // Get author names for SEO
+    const authorNames = article.authors && article.authors.length > 0
+        ? article.authors.map(a => a.name).join(', ')
+        : article.author_name || "Reform in Focus";
+
     // Generate JSON-LD structured data for article
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "Article",
         headline: article.title,
         description: article.excerpt,
-        author: {
-            "@type": "Organization",
-            name: "Reform in Focus",
-            url: "https://blog.ryanlongo.net"
-        },
+        author: article.authors && article.authors.length > 0
+            ? article.authors.map(author => ({
+                "@type": "Person",
+                name: author.name,
+                url: `https://blog.ryanlongo.net/authors/${author.slug}`
+            }))
+            : {
+                "@type": "Person",
+                name: article.author_name || "Reform in Focus"
+            },
         publisher: {
             "@type": "Organization",
             name: "Reform in Focus",
@@ -98,7 +113,7 @@ export default function Page({ article, error }: ArticlePageProps) {
                 article={{
                     publishedTime: article.published_at || article.created_at,
                     modifiedTime: article.updated_at,
-                    author: article.author_name || "Reform in Focus"
+                    author: authorNames
                 }}
             />
 
@@ -114,6 +129,21 @@ export default function Page({ article, error }: ArticlePageProps) {
 
             <Article>
                 <ArticleHeader title={article.title} subtitle={article.excerpt} />
+
+                {/* Author Byline */}
+                {article.authors && article.authors.length > 0 ? (
+                    <AuthorByline
+                        authors={article.authors}
+                        publishedAt={article.published_at}
+                        updatedAt={article.updated_at}
+                    />
+                ) : article.author_name ? (
+                    <AuthorBylineLegacy
+                        authorName={article.author_name}
+                        publishedAt={article.published_at}
+                    />
+                ) : null}
+
                 {article.featured_image_url && (
                     <div className="ArticleFeaturedImage">
                         <img
@@ -146,30 +176,65 @@ export const getServerSideProps: GetServerSideProps<ArticlePageProps> = async (c
     }
 
     try {
-        const { data, error } = await supabase
+        // Fetch article
+        const { data: articleData, error: articleError } = await supabase
             .from('articles')
             .select('*')
             .eq('easyid', Number(id))
             .single();
 
-        if (error || !data) {
+        if (articleError || !articleData) {
             return {
                 notFound: true
             };
         }
 
-        // Redirect to slug-based URL for SEO (optional but recommended)
-        // Uncomment if you want to redirect /article/1 to /articles/the-slug
-        // return {
-        //     redirect: {
-        //         destination: `/articles/${data.slug}`,
-        //         permanent: true
-        //     }
-        // };
+        // Cast to ArticleType for proper typing
+        const article = articleData as ArticleType;
+
+        // Fetch authors for this article
+        let authors: AuthorSummary[] = [];
+
+        try {
+            const { data: authorLinks, error: authorError } = await supabase
+                .from('article_authors')
+                .select(`
+                    author_order,
+                    authors (
+                        id,
+                        name,
+                        slug,
+                        avatar_url,
+                        title
+                    )
+                `)
+                .eq('article_id', article.id)
+                .order('author_order', { ascending: true });
+
+            if (!authorError && authorLinks && authorLinks.length > 0) {
+                authors = (authorLinks as Array<{ author_order: number; authors: AuthorSummary | null }>)
+                    .filter(link => link.authors !== null)
+                    .map(link => link.authors as AuthorSummary);
+            }
+        } catch (authorErr) {
+            // If authors table doesn't exist yet, just continue without authors
+            console.log('Authors not available:', authorErr);
+        }
+
+        // Set cache headers
+        context.res.setHeader(
+            'Cache-Control',
+            'public, s-maxage=60, stale-while-revalidate=300'
+        );
+
+        const articleWithAuthors: ArticleWithAuthors = {
+            ...article,
+            authors
+        };
 
         return {
             props: {
-                article: data as ArticleType
+                article: articleWithAuthors
             }
         };
     } catch (err) {
