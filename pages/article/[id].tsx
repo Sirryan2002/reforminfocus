@@ -1,103 +1,184 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import Article, { ArticleHeader, ArticleBody, articleType } from "@/components/article";
+import { GetServerSideProps } from "next";
+import Link from "next/link";
+import Article, { ArticleHeader, ArticleBody } from "@/components/article";
 import Navbar from "@/components/navbar";
+import SEOHead from "@/components/SEOHead";
+import Head from "next/head";
+import type { Article as ArticleType } from '@/types';
+import { supabase } from "@/lib/supabase";
 
-export default function Page() {
-    const router = useRouter();
-    const { id } = router.query;
+interface ArticlePageProps {
+    article: ArticleType | null;
+    error?: string;
+}
 
-    // Don't try to use id until router is ready
-    if (!router.isReady) {
+export default function Page({ article, error }: ArticlePageProps) {
+    if (error || !article) {
         return (
             <>
+                <SEOHead
+                    title="Article Not Found"
+                    description="The article you're looking for doesn't exist or has been removed."
+                    noindex={true}
+                />
                 <Navbar />
-                <div className="loading-container">
-                    <div className="loading-spinner"></div>
-                    <p>Loading...</p>
+                <div style={{
+                    textAlign: 'center',
+                    padding: '4rem 1rem',
+                    color: 'var(--neutral-700)'
+                }}>
+                    <h1 style={{
+                        fontSize: '2rem',
+                        marginBottom: '1rem',
+                        fontFamily: "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif"
+                    }}>
+                        Article Not Found
+                    </h1>
+                    <p style={{ marginBottom: '2rem' }}>
+                        {error || "The article you're looking for doesn't exist."}
+                    </p>
+                    <Link
+                        href="/"
+                        style={{
+                            display: 'inline-block',
+                            padding: '0.75rem 1.5rem',
+                            backgroundColor: 'var(--primary-blue)',
+                            color: 'var(--white)',
+                            textDecoration: 'none',
+                            borderRadius: '6px',
+                            fontWeight: '600'
+                        }}
+                    >
+                        Back to Home
+                    </Link>
                 </div>
             </>
         );
     }
 
-    const articleID = id ? Number(id) : null;
-
-    console.log('Article ID from URL:', articleID);
+    // Generate JSON-LD structured data for article
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: article.title,
+        description: article.excerpt,
+        author: {
+            "@type": "Organization",
+            name: "Reform in Focus",
+            url: "https://blog.ryanlongo.net"
+        },
+        publisher: {
+            "@type": "Organization",
+            name: "Reform in Focus",
+            logo: {
+                "@type": "ImageObject",
+                url: "https://blog.ryanlongo.net/logo.png"
+            }
+        },
+        datePublished: article.published_at || article.created_at,
+        dateModified: article.updated_at || article.published_at || article.created_at,
+        mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": `https://blog.ryanlongo.net/articles/${article.slug}`
+        },
+        image: article.featured_image_url || "https://blog.ryanlongo.net/og-default.png",
+        articleSection: "Education",
+        keywords: "Michigan education reform, K-12 policy, education analysis"
+    };
 
     return (
         <>
+            <SEOHead
+                title={article.title}
+                description={article.excerpt}
+                canonical={`/articles/${article.slug}`}
+                ogType="article"
+                ogImage={article.featured_image_url || undefined}
+                ogImageAlt={article.title}
+                article={{
+                    publishedTime: article.published_at || article.created_at,
+                    modifiedTime: article.updated_at,
+                    author: article.author_name || "Reform in Focus"
+                }}
+            />
+
+            {/* JSON-LD Structured Data */}
+            <Head>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                />
+            </Head>
+
             <Navbar />
-            {articleID !== null && <ArticleContainer articleId={articleID} />}
+
+            <Article>
+                <ArticleHeader title={article.title} subtitle={article.excerpt} />
+                {article.featured_image_url && (
+                    <div className="ArticleFeaturedImage">
+                        <img
+                            src={article.featured_image_url}
+                            alt={article.title}
+                            style={{
+                                width: '100%',
+                                height: 'auto',
+                                marginBottom: '2.5rem'
+                            }}
+                        />
+                    </div>
+                )}
+                <ArticleBody articleContent={article.content} />
+            </Article>
         </>
     );
 }
 
-const ArticleContainer = ({ articleId }: { articleId: number }) => {
-    const [article, setArticle] = useState<articleType | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+export const getServerSideProps: GetServerSideProps<ArticlePageProps> = async (context) => {
+    const { id } = context.params || {};
 
-    useEffect(() => {
-        // Don't fetch if articleId is invalid
-        if (!articleId || isNaN(articleId)) {
-            setLoading(false);
-            setError('Invalid article ID');
-            return;
-        }
-
-        const fetchArticle = async () => {
-            try {
-                console.log('Fetching article with ID:', articleId);
-                
-                const res = await fetch('/api/getArticle', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ articleId: articleId }),
-                });
-                
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-                
-                const response = await res.json();
-                console.log('Fetched article:', response);
-                
-                setArticle(response.data);
-
-            } catch (error) {
-                console.error('Error fetching article:', error);
-                setError('Failed to load article');
-            } finally {
-                setLoading(false);
+    if (!id || isNaN(Number(id))) {
+        return {
+            props: {
+                article: null,
+                error: 'Invalid article ID'
             }
         };
-
-        fetchArticle();
-    }, [articleId]); // Add articleId as dependency
-
-    if (loading) {
-        return (
-            <div className="loading-container">
-                <div className="loading-spinner"></div>
-                <p>Loading Article...</p>
-            </div>
-        );
     }
 
-    if (error) {
-        return <p>Error: {error}</p>;
-    }
+    try {
+        const { data, error } = await supabase
+            .from('articles')
+            .select('*')
+            .eq('easyid', Number(id))
+            .single();
 
-    if (!article) {
-        return <p>Article not found.</p>;
-    }
+        if (error || !data) {
+            return {
+                notFound: true
+            };
+        }
 
-    return (
-        <Article>
-            <ArticleHeader title={article.title} subtitle={article.slug} />
-            <ArticleBody articleContent={article.content} />
-        </Article>
-    );
-}
+        // Redirect to slug-based URL for SEO (optional but recommended)
+        // Uncomment if you want to redirect /article/1 to /articles/the-slug
+        // return {
+        //     redirect: {
+        //         destination: `/articles/${data.slug}`,
+        //         permanent: true
+        //     }
+        // };
+
+        return {
+            props: {
+                article: data as ArticleType
+            }
+        };
+    } catch (err) {
+        console.error('Error fetching article:', err);
+        return {
+            props: {
+                article: null,
+                error: 'Failed to load article'
+            }
+        };
+    }
+};

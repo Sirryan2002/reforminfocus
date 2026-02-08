@@ -1,107 +1,27 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { GetServerSideProps } from "next";
 import Link from "next/link";
 import Article, { ArticleHeader, ArticleBody } from "@/components/article";
 import Navbar from "@/components/navbar";
 import SEOHead from "@/components/SEOHead";
 import Head from "next/head";
 import type { Article as ArticleType } from '@/types';
+import { supabase } from "@/lib/supabase";
 
-export default function ArticlePage() {
-    const router = useRouter();
-    const { slug } = router.query;
-
-    // Don't try to use slug until router is ready
-    if (!router.isReady) {
-        return (
-            <>
-                <Head>
-                    <title>Loading... - Reform in Focus</title>
-                </Head>
-                <Navbar />
-                <div className="loading-container">
-                    <div className="loading-spinner"></div>
-                    <p>Loading...</p>
-                </div>
-            </>
-        );
-    }
-
-    const articleSlug = slug ? String(slug) : null;
-
-    return (
-        <>
-            <Navbar />
-            {articleSlug !== null && <ArticleContainer articleSlug={articleSlug} />}
-        </>
-    );
+interface ArticlePageProps {
+    article: ArticleType | null;
+    error?: string;
 }
 
-const ArticleContainer = ({ articleSlug }: { articleSlug: string }) => {
-    const [article, setArticle] = useState<ArticleType | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (!articleSlug) {
-            setLoading(false);
-            setError('Invalid article slug');
-            return;
-        }
-
-        const fetchArticle = async () => {
-            try {
-                const res = await fetch('/api/getArticleBySlug', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ slug: articleSlug }),
-                });
-
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-
-                const response = await res.json();
-
-                if (response.error) {
-                    throw new Error(response.error);
-                }
-
-                setArticle(response.data);
-
-            } catch (error) {
-                console.error('Error fetching article:', error);
-                setError(error instanceof Error ? error.message : 'Failed to load article');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchArticle();
-    }, [articleSlug]);
-
-    if (loading) {
+export default function ArticlePage({ article, error }: ArticlePageProps) {
+    if (error || !article) {
         return (
             <>
-                <Head>
-                    <title>Loading... - Reform in Focus</title>
-                </Head>
-                <div className="loading-container">
-                    <div className="loading-spinner"></div>
-                    <p>Loading Article...</p>
-                </div>
-            </>
-        );
-    }
-
-    if (error) {
-        return (
-            <>
-                <Head>
-                    <title>Error - Reform in Focus</title>
-                </Head>
+                <SEOHead
+                    title="Article Not Found"
+                    description="The article you're looking for doesn't exist or has been removed."
+                    noindex={true}
+                />
+                <Navbar />
                 <div style={{
                     textAlign: 'center',
                     padding: '4rem 1rem',
@@ -114,7 +34,9 @@ const ArticleContainer = ({ articleSlug }: { articleSlug: string }) => {
                     }}>
                         Article Not Found
                     </h1>
-                    <p style={{ marginBottom: '2rem' }}>{error}</p>
+                    <p style={{ marginBottom: '2rem' }}>
+                        {error || "The article you're looking for doesn't exist."}
+                    </p>
                     <Link
                         href="/"
                         style={{
@@ -129,44 +51,6 @@ const ArticleContainer = ({ articleSlug }: { articleSlug: string }) => {
                     >
                         Back to Home
                     </Link>
-                </div>
-            </>
-        );
-    }
-
-    if (!article) {
-        return (
-            <>
-                <Head>
-                    <title>Article Not Found - Reform in Focus</title>
-                </Head>
-                <div style={{
-                    textAlign: 'center',
-                    padding: '4rem 1rem',
-                    color: 'var(--neutral-700)'
-                }}>
-                    <h1 style={{
-                        fontSize: '2rem',
-                        marginBottom: '1rem',
-                        fontFamily: "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif"
-                    }}>
-                        Article Not Found
-                    </h1>
-                    <p style={{ marginBottom: '2rem' }}>The article you're looking for doesn't exist.</p>
-                    <a
-                        href="/"
-                        style={{
-                            display: 'inline-block',
-                            padding: '0.75rem 1.5rem',
-                            backgroundColor: 'var(--primary-blue)',
-                            color: 'var(--white)',
-                            textDecoration: 'none',
-                            borderRadius: '6px',
-                            fontWeight: '600'
-                        }}
-                    >
-                        Back to Home
-                    </a>
                 </div>
             </>
         );
@@ -226,6 +110,8 @@ const ArticleContainer = ({ articleSlug }: { articleSlug: string }) => {
                 />
             </Head>
 
+            <Navbar />
+
             <Article>
                 <ArticleHeader title={article.title} subtitle={article.excerpt} />
                 {article.featured_image_url && (
@@ -246,3 +132,45 @@ const ArticleContainer = ({ articleSlug }: { articleSlug: string }) => {
         </>
     );
 }
+
+export const getServerSideProps: GetServerSideProps<ArticlePageProps> = async (context) => {
+    const { slug } = context.params || {};
+
+    if (!slug || typeof slug !== 'string') {
+        return {
+            props: {
+                article: null,
+                error: 'Invalid article slug'
+            }
+        };
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('articles')
+            .select('*')
+            .eq('slug', slug)
+            .eq('published', true)
+            .single();
+
+        if (error || !data) {
+            return {
+                notFound: true
+            };
+        }
+
+        return {
+            props: {
+                article: data as ArticleType
+            }
+        };
+    } catch (err) {
+        console.error('Error fetching article:', err);
+        return {
+            props: {
+                article: null,
+                error: 'Failed to load article'
+            }
+        };
+    }
+};
