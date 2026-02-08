@@ -117,6 +117,48 @@
     letter-spacing: -0.01em;
 }
 
+/* Heading Anchor Links (Wikipedia-style) */
+.ArticleBody .heading-with-anchor {
+    position: relative;
+    scroll-margin-top: 80px; /* Account for fixed navbar */
+}
+
+.ArticleBody .heading-anchor-link {
+    opacity: 0;
+    margin-left: 0.5rem;
+    font-size: 0.8em;
+    font-weight: 400;
+    color: var(--neutral-400, #9ca3af);
+    text-decoration: none;
+    border-bottom: none !important;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    vertical-align: middle;
+}
+
+.ArticleBody .heading-with-anchor:hover .heading-anchor-link,
+.ArticleBody .heading-anchor-link:focus {
+    opacity: 1;
+}
+
+.ArticleBody .heading-anchor-link:hover {
+    color: var(--primary-blue, #2563eb);
+    background-color: transparent !important;
+}
+
+/* Highlight anchor target briefly when navigating */
+.ArticleBody .heading-with-anchor:target {
+    animation: anchor-highlight 2s ease;
+}
+
+@keyframes anchor-highlight {
+    0% {
+        background-color: rgba(37, 99, 235, 0.15);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
 .ArticleBody h1 {
     font-size: 2rem;
     line-height: 1.2;

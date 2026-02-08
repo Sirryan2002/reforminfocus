@@ -5,6 +5,7 @@ import { withAuth } from '@/lib/withAuth';
 import AdminLayout from '@/components/admin/AdminLayout';
 import TiptapEditor from '@/components/admin/TiptapEditor';
 import ImageUploader from '@/components/admin/ImageUploader';
+import AuthorSelector from '@/components/admin/AuthorSelector';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 
@@ -29,6 +30,7 @@ function NewArticlePage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showImageGuidelines, setShowImageGuidelines] = useState(false);
   const [showSEOSection, setShowSEOSection] = useState(false);
+  const [selectedAuthorIds, setSelectedAuthorIds] = useState<number[]>([]);
 
   const generateSlug = (title: string) => {
     return title
@@ -89,13 +91,34 @@ function NewArticlePage() {
         pinned: formData.pinned,
       };
 
-      const { error } = await supabase
+      const { data: newArticleData, error } = await supabase
         .from('articles')
         .insert(articleData as never)
         .select()
         .single();
 
       if (error) throw error;
+
+      // Cast to get proper typing
+      const newArticle = newArticleData as { id: number } | null;
+
+      // Save author relationships if authors are selected
+      if (selectedAuthorIds.length > 0 && newArticle) {
+        const articleAuthorsData = selectedAuthorIds.map((authorId, index) => ({
+          article_id: newArticle.id,
+          author_id: authorId,
+          author_order: index + 1
+        }));
+
+        const { error: authorError } = await supabase
+          .from('article_authors')
+          .insert(articleAuthorsData as never[]);
+
+        if (authorError) {
+          console.error('Error saving authors:', authorError);
+          // Don't throw - article was created successfully
+        }
+      }
 
       // Redirect to article list or edit page
       router.push('/admin/articles');
@@ -182,7 +205,7 @@ function NewArticlePage() {
           </div>
 
           {/* Type and Settings Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
             {/* Article Type */}
             <div>
               <label
@@ -218,36 +241,6 @@ function NewArticlePage() {
               </select>
             </div>
 
-            {/* Author */}
-            <div>
-              <label
-                htmlFor="author_name"
-                style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontWeight: '600',
-                  color: 'var(--neutral-800)',
-                  fontSize: '0.875rem'
-                }}
-              >
-                Author
-              </label>
-              <input
-                type="text"
-                id="author_name"
-                value={formData.author_name}
-                onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
-                placeholder="Author name"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  fontSize: '1rem',
-                  border: '1px solid var(--neutral-300)',
-                  borderRadius: '6px'
-                }}
-              />
-            </div>
-
             {/* Read Time */}
             <div>
               <label
@@ -278,6 +271,16 @@ function NewArticlePage() {
                 }}
               />
             </div>
+          </div>
+
+          {/* Authors */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <AuthorSelector
+              selectedAuthorIds={selectedAuthorIds}
+              onChange={setSelectedAuthorIds}
+              legacyAuthorName={formData.author_name}
+              onLegacyAuthorNameChange={(name) => setFormData({ ...formData, author_name: name })}
+            />
           </div>
 
           {/* Excerpt */}

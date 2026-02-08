@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { withAuth } from '@/lib/withAuth';
 import AdminLayout from '@/components/admin/AdminLayout';
 import TiptapEditor from '@/components/admin/TiptapEditor';
+import AuthorSelector from '@/components/admin/AuthorSelector';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 
@@ -26,6 +27,7 @@ function EditArticlePage() {
     pinned: false,
     featured_image_url: null as string | null,
   });
+  const [selectedAuthorIds, setSelectedAuthorIds] = useState<number[]>([]);
   const [status, setStatus] = useState<'loading' | 'idle' | 'saving' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -61,6 +63,25 @@ function EditArticlePage() {
           pinned: articleData.pinned || false,
           featured_image_url: articleData.featured_image_url,
         });
+
+        // Fetch existing authors for this article
+        try {
+          const { data: authorLinks } = await supabase
+            .from('article_authors')
+            .select('author_id, author_order')
+            .eq('article_id', articleData.id)
+            .order('author_order', { ascending: true });
+
+          if (authorLinks && authorLinks.length > 0) {
+            const authorIds = (authorLinks as Array<{ author_id: number; author_order: number }>)
+              .map(link => link.author_id);
+            setSelectedAuthorIds(authorIds);
+          }
+        } catch (authorErr) {
+          // Authors table might not exist yet, continue without authors
+          console.log('Authors not available:', authorErr);
+        }
+
         setStatus('idle');
       } catch (error) {
         setStatus('error');
@@ -129,6 +150,36 @@ function EditArticlePage() {
         .eq('id', id as string);
 
       if (error) throw error;
+
+      // Update author relationships
+      try {
+        // First, delete existing author relationships
+        await supabase
+          .from('article_authors')
+          .delete()
+          .eq('article_id', id as string);
+
+        // Then insert new author relationships
+        if (selectedAuthorIds.length > 0) {
+          const authorRelations = selectedAuthorIds.map((authorId, index) => ({
+            article_id: parseInt(id as string),
+            author_id: authorId,
+            author_order: index + 1
+          }));
+
+          const { error: authorError } = await supabase
+            .from('article_authors')
+            .insert(authorRelations as never);
+
+          if (authorError) {
+            console.error('Error saving authors:', authorError);
+            // Don't fail the whole save if authors fail
+          }
+        }
+      } catch (authorErr) {
+        // Authors table might not exist yet, continue without saving authors
+        console.log('Authors not available:', authorErr);
+      }
 
       // Redirect to article list
       router.push('/admin/articles');
@@ -294,7 +345,7 @@ function EditArticlePage() {
           </div>
 
           {/* Type and Settings Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
             {/* Article Type */}
             <div>
               <label
@@ -330,36 +381,6 @@ function EditArticlePage() {
               </select>
             </div>
 
-            {/* Author */}
-            <div>
-              <label
-                htmlFor="author_name"
-                style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontWeight: '600',
-                  color: 'var(--neutral-800)',
-                  fontSize: '0.875rem'
-                }}
-              >
-                Author
-              </label>
-              <input
-                type="text"
-                id="author_name"
-                value={formData.author_name}
-                onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
-                placeholder="Author name"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  fontSize: '1rem',
-                  border: '1px solid var(--neutral-300)',
-                  borderRadius: '6px'
-                }}
-              />
-            </div>
-
             {/* Read Time */}
             <div>
               <label
@@ -390,6 +411,16 @@ function EditArticlePage() {
                 }}
               />
             </div>
+          </div>
+
+          {/* Authors */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <AuthorSelector
+              selectedAuthorIds={selectedAuthorIds}
+              onChange={setSelectedAuthorIds}
+              legacyAuthorName={formData.author_name}
+              onLegacyAuthorNameChange={(name) => setFormData({ ...formData, author_name: name })}
+            />
           </div>
 
           {/* Excerpt */}
